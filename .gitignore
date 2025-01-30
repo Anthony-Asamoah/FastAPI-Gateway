@@ -1,0 +1,57 @@
+# Python
+*.pyc
+*.pyo
+__pycache__/
+*.pyd
+*.pdb
+*.so
+*.swp
+
+# Virtual Environment
+venv/
+.env
+.env.*
+*.venv
+
+# Logs
+logs/
+*.log
+*.out
+*.err
+
+# IDE and Editor Files
+.vscode/
+.idea/
+*.iml
+*.sublime-workspace
+
+# Byte-compiled / package files
+*.egg-info/
+dist/
+build/
+pip-wheel-metadata/
+
+# Docker
+*.dockerignore
+docker-compose.override.yml
+
+# Database
+*.sqlite3
+*.db
+
+# Cache
+*.cache
+*.pytest_cache/
+__pypackages__/
+
+# Coverage reports
+htmlcov/
+.coverage
+coverage.xml
+.nox/
+
+# Jupyter Notebooks
+.ipynb_checkpoints/
+
+# FastAPI Specific
+instance/
