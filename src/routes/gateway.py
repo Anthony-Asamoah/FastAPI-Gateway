@@ -2,6 +2,7 @@ from fastapi import HTTPException, APIRouter, status
 from starlette.requests import Request
 
 from src.config import settings
+from src.config.expose import available_backends
 from src.services.gateway import forward_request
 
 gateway_router = APIRouter()
@@ -21,14 +22,14 @@ async def gateway(app_name: str, path: str, request: Request):
         request: The incoming FastAPI request
     """
     # Check if the requested application exists
-    if app_name not in settings.BACKENDS: raise HTTPException(
+    if app_name not in available_backends: raise HTTPException(
         status_code=status.HTTP_404_NOT_FOUND,
         detail=f"Application '{app_name}' not found. "
-               f"Available apps: {list(settings.BACKENDS.keys())}"
+               f"Available apps: {list(available_backends.keys())}"
     )
 
     # Get the backend URL for the requested application
-    backend_url = settings.BACKENDS[app_name]
+    backend_url = available_backends[app_name]
 
     # Forward the request and return the response
     return await forward_request(request, backend_url, path)

@@ -32,7 +32,6 @@ async def forward_request(
     # Forward all headers except host
     headers = dict(request.headers)
     headers.pop("host", None)
-    print('http_client', http_client)
 
     try:
         # Forward the request to the backend service

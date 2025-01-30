@@ -1,12 +1,11 @@
 import os
 from functools import lru_cache
 from pathlib import Path
-from typing import Any, List, Dict
+from typing import Any, List
 
 import httpx
 from decouple import config
 from httpx import AsyncClient
-from pydantic import model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -52,17 +51,6 @@ class AppSettings(BaseSettings):
         default=["GET", "POST"]
     )
     TIMEOUT_SECONDS: int = config("TIMEOUT_SECONDS", cast=int, default=30)
-    BACKENDS: Dict[str, str] = lambda: {}
-
-    @model_validator(mode='before')
-    @classmethod
-    def set_backends(cls, values):
-        values["BACKENDS"] = {
-            "mmra": os.getenv("MMRA_BACKEND", "http://localhost:8085"),
-            "stock": os.getenv("STOCK_BACKEND", "http://localhost:8090"),
-            "e-post": os.getenv("EPOST_BACKEND", "http://localhost:7000")
-        }
-        return values
 
     model_config = SettingsConfigDict(
         env_file=f"{Path().resolve()}/.env",
