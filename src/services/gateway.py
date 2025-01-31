@@ -33,6 +33,7 @@ async def forward_request(
     headers = dict(request.headers)
     headers.pop("host", None)
 
+
     try:
         # Forward the request to the backend service
         response = await http_client.request(
