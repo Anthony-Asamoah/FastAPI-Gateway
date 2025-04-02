@@ -26,7 +26,7 @@ class AppSettings(BaseSettings):
     IS_ALLOWED_CREDENTIALS: bool = True
     ALLOWED_HEADERS: str = getenv("ALLOWED_HEADERS", default="*")
     ALLOWED_ORIGINS: str = getenv("ALLOWED_ORIGINS", default="*")
-    ALLOWED_METHODS: str = getenv("ALLOWED_METHODS", default="GET, POST, PATCH, DELETE")
+    ALLOWED_METHODS: str = getenv("ALLOWED_METHODS", default="GET, POST, PATCH, PUT, DELETE")
     TIMEOUT_SECONDS: int = 30
     ALLOWED_HEADER_LIST: list[str] = [s.strip() for s in ALLOWED_HEADERS.split(",")]
     ALLOWED_ORIGIN_LIST: list[str] = [s.strip() for s in ALLOWED_ORIGINS.split(",")]
