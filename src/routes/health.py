@@ -2,21 +2,21 @@ import asyncio
 from typing import Dict
 
 import httpx
+from config import settings
 from fastapi import APIRouter
 
-from src.config import settings
-from src.config.expose import available_backends
+from src.config import api_registry
 
 health_router = APIRouter()
 
 
-@health_router.get("/health")
+@health_router.get("")
 async def health_check():
     """Health check endpoint for the gateway"""
 
     status = dict(
         status="healthy",
-        backends=available_backends.copy(),
+        backends=api_registry.copy(),
         supported_methods=settings.ALLOWED_METHODS
     )
 
@@ -33,7 +33,7 @@ async def health_check():
     # Create tasks for all backend health checks
     backend_checks = [
         check_backend(label, url)
-        for label, url in available_backends.items()
+        for label, url in api_registry.items()
     ]
 
     # Run all checks concurrently

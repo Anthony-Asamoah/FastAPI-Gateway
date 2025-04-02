@@ -4,9 +4,9 @@ from fastapi import FastAPI, APIRouter
 from fastapi.middleware.cors import CORSMiddleware
 from uvicorn import run
 
-from src.config import settings, AppSettings
-from src.config.event import lifespan
-from src.routes import router
+from config import settings, AppSettings
+from config.event import lifespan
+from routes import router
 
 
 class App:
@@ -21,7 +21,7 @@ class App:
             CORSMiddleware,
             allow_origins=settings.ALLOWED_ORIGIN_LIST,
             allow_credentials=settings.IS_ALLOWED_CREDENTIALS,
-            allow_methods=settings.ALLOWED_METHODS,
+            allow_methods=settings.ALLOWED_METHODS_LIST,
             allow_headers=settings.ALLOWED_HEADER_LIST,
         )
 
@@ -46,6 +46,6 @@ if __name__ == "__main__":
         app='main:app',
         host=settings.HOST,
         port=settings.PORT,
-        reload=settings.IS_DEBUG,
+        reload=False,
         workers=settings.WORKERS,
     )

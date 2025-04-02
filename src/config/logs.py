@@ -2,7 +2,7 @@ import logging
 import os
 from datetime import datetime, UTC
 
-from src.config import settings
+from config import settings
 
 
 def get_log_level_from_string(log_level: str):

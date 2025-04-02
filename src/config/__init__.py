@@ -1,62 +1,55 @@
+import json
 import os
 from functools import lru_cache
+from os import getenv
 from pathlib import Path
-from typing import Any, List
+from typing import Any
 
 import httpx
-from decouple import config
 from httpx import AsyncClient
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class AppSettings(BaseSettings):
     # App
-    TITLE: str = config("TITLE", cast=str, default="Gateway")
-    VERSION: str = config("APP_VERSION", cast=str, default="0.0.1")
-    TIMEZONE: str = config("TIMEZONE", cast=str, default="UTC")
-    DESCRIPTION: str = config("DESCRIPTION", cast=str, default="")
-
-    IS_DEBUG: bool = config("DEBUG", cast=bool, default=False)
-
-    DOCS_URL: str = config("DOCS_URL", cast=str, default='/docs')
-    OPENAPI_URL: str = config("OPENAPI_URL", cast=str, default='/redoc')
-    REDOC_URL: str = config("REDOC_URL", cast=str, default='/openapi.json')
-    OPENAPI_PREFIX: str = config("OPENAPI_PREFIX", cast=str, default="")
-    API_PREFIX: str = config("API_PREFIX", cast=str, default="/gateway")
-
+    TITLE: str = "Gateway"
+    VERSION: str = "0.0.1"
+    TIMEZONE: str = "UTC"
+    DESCRIPTION: str = ""
+    IS_DEBUG: bool = False
     BASE_DIR: Any = Path(__file__).resolve().parent.parent
 
+    # Server
+    HOST: str = "localhost"
+    PORT: int = 8000
+    WORKERS: int = 4
+    IS_ALLOWED_CREDENTIALS: bool = True
+    ALLOWED_HEADERS: str = getenv("ALLOWED_HEADERS", default="*")
+    ALLOWED_ORIGINS: str = getenv("ALLOWED_ORIGINS", default="*")
+    ALLOWED_METHODS: str = getenv("ALLOWED_METHODS", default="GET, POST, PATCH, DELETE")
+    TIMEOUT_SECONDS: int = 30
+    ALLOWED_HEADER_LIST: list[str] = [s.strip() for s in ALLOWED_HEADERS.split(",")]
+    ALLOWED_ORIGIN_LIST: list[str] = [s.strip() for s in ALLOWED_ORIGINS.split(",")]
+    ALLOWED_METHODS_LIST: list[str] = [s.strip() for s in ALLOWED_METHODS.split(",")]
+
+    # URLS
+    API_PREFIX: str = "/api"
+    OPENAPI_PREFIX: str = "/api"
+    DOCS_URL: str = '/docs'
+    OPENAPI_URL: str = '/redoc'
+    REDOC_URL: str = '/openapi.json'
+
     # Logs
-    LOG_LEVEL: str = config("LOG_LEVEL", cast=str, default="INFO")
+    LOG_LEVEL: str = "INFO"
     LOG_ROOT: str = os.path.join(BASE_DIR, 'logs/')
 
-    # Server
-    HOST: str = config("SERVER_HOST", cast=str)
-    PORT: int = config("SERVER_PORT", cast=int)
-    WORKERS: int = config("SERVER_WORKERS", cast=int)
-    IS_ALLOWED_CREDENTIALS: bool = config("IS_ALLOWED_CREDENTIALS", cast=bool, default=True)
-    ALLOWED_HEADER_LIST: List[str] = config(
-        "ALLOWED_HEADER_LIST",
-        cast=lambda v: [s.strip() for s in v.split(",")],
-        default="*"
-    )
-    ALLOWED_ORIGIN_LIST: List[str] = config(
-        "BACKEND_CORS_ORIGINS",
-        cast=lambda v: [s.strip() for s in v.split(",")],
-        default="*"
-    )
-    ALLOWED_METHODS: List[str] = config(
-        "ALLOWED_METHODS",
-        cast=lambda v: [s.strip() for s in v.split(",")],
-        default=["GET", "POST"]
-    )
-    TIMEOUT_SECONDS: int = config("TIMEOUT_SECONDS", cast=int, default=30)
+    # Registry file name
+    REG_FILE_NAME: str = "registry.json"
 
     model_config = SettingsConfigDict(
         env_file=f"{Path().resolve()}/.env",
         case_sensitive=True,
         validate_assignment=True,
-        extra="allow",
     )
 
     @property
@@ -72,7 +65,7 @@ class AppSettings(BaseSettings):
             "docs_url": self.DOCS_URL,
             "openapi_url": self.OPENAPI_URL,
             "redoc_url": self.REDOC_URL,
-            "openapi_prefix": self.OPENAPI_PREFIX,
+            "root_path": self.OPENAPI_PREFIX,
             "api_prefix": self.API_PREFIX,
         }
 
@@ -85,3 +78,9 @@ def get_settings() -> AppSettings:
 settings = AppSettings()
 
 http_client: AsyncClient = httpx.AsyncClient(timeout=settings.TIMEOUT_SECONDS)
+
+api_registry: dict[str, Any] = {}
+# load persisted services if file exists
+if os.path.exists(settings.REG_FILE_NAME):
+    with open(settings.REG_FILE_NAME) as registry_file:
+        api_registry = json.load(registry_file)

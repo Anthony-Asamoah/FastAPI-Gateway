@@ -9,10 +9,10 @@ __pycache__/
 
 # Virtual Environment
 venv/
-.env
-.env.*
+src/.env
+src/.env.example
 *.venv
-!.env.example
+!src/.env.example
 
 # Logs
 logs/
@@ -57,4 +57,4 @@ coverage.xml
 # FastAPI Specific
 instance/
 
-src/config/expose.py
+src/registry.json

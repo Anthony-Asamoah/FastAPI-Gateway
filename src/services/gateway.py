@@ -2,11 +2,11 @@ from typing import Optional
 from urllib.parse import urljoin
 
 import httpx
+from config import settings, http_client
+from config.logs import logger
 from fastapi import HTTPException, Request, status
 from fastapi.responses import StreamingResponse
 
-from src.config.logs import logger
-from src.config import settings, http_client
 
 async def forward_request(
         request: Request,
